@@ -1,0 +1,19 @@
+[package]
+name = "stock_broker_application"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+
+[[bin]]
+name = "http_server"
+path = "src/bin/http_server.rs"
+
+[[bin]]
+name = "place_trade_worker"
+path = "src/bin/place_trade_worker.rs"
+
+[[bin]]
+name = "historical_data_worker"
+path = "src/bin/historical_data_worker.rs"
