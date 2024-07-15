@@ -1,3 +1,8 @@
+### Systems Architecture
+
+![alt text](diagram.png)
+
+
 ### Project Structure
 
 ```
@@ -891,9 +896,3 @@ In this setup, we've designed a robust stockbroker application architecture usin
 - Monitor system performance and apply updates.
 - Implement new features based on user feedback.
 - Ensure the system remains secure and scalable.
-
-
-
-
-
-![alt text](image-1.png)
