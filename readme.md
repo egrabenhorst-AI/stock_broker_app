@@ -46,6 +46,17 @@ stock_broker/
 Add the new binaries to your `Cargo.toml`:
 
 ```toml
+[package]
+name = "stock_broker_application"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nats = "0.14.0"
+actix-web = "4.0.0"
+dotenv = "0.15.0"
+tokio = { version = "1.0", features = ["full"] }
+
 [[bin]]
 name = "http_server"
 path = "src/bin/http_server.rs"
@@ -57,6 +68,7 @@ path = "src/bin/place_trade_worker.rs"
 [[bin]]
 name = "historical_data_worker"
 path = "src/bin/historical_data_worker.rs"
+
 ```
 
 
