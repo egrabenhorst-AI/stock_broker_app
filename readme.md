@@ -34,6 +34,9 @@ stock_broker/
 │   │   ├── http_server.rs
 │   │   ├── place_trade_worker.rs
 │   │   └── historical_data_worker.rs
+├── proto/
+│   ├── historical_data.proto
+├── build.rs
 ├── Dockerfile
 ├── Dockerfile.worker
 ├── nginx.conf
