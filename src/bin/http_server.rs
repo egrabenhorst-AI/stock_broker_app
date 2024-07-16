@@ -3,11 +3,17 @@ use std::env;
 use dotenv::dotenv;
 use nats::asynk::Connection;
 
-mod handlers;
-mod services;
+pub mod services {
+    pub mod nats_service;
+}
 
-use handlers::place_trade::create_trade_request;
-use handlers::historical_data::get_historical_data;
+pub mod handlers {
+    pub mod place_trade;
+    pub mod historical_data;
+}
+
+use crate::handlers::place_trade::create_trade_request;
+use crate::handlers::historical_data::get_historical_data;
 use services::nats_service::connect_to_nats;
 
 #[actix_web::main]

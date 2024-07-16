@@ -1,8 +1,13 @@
 use dotenv::dotenv;
 use std::env;
 use nats::asynk::Connection;
-use crate::services::nats_service::connect_to_nats;
-use crate::services::place_trade_service::run_place_trade_request_worker;
+
+pub mod services {
+    pub mod place_trade_service;
+}
+
+use services::nats_service::connect_to_nats;
+use services::run_place_trade_request_worker;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

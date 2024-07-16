@@ -1,7 +1,7 @@
 use actix_web::{web, HttpResponse, Responder};
 use serde_json::json;
-use crate::models::HistoricalDataRequestMessage;
-use crate::services::nats_service::publish_to_nats;
+use models::HistoricalDataRequestMessage;
+use services::nats_service::publish_to_nats;
 use nats::asynk::Connection;
 
 pub async fn get_historical_data(nats: web::Data<Connection>, query: web::Query<HistoricalDataRequestMessage>) -> impl Responder {

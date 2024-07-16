@@ -1,6 +1,6 @@
 use futures::stream::StreamExt;
 use nats::asynk::Connection;
-use crate::models::HistoricalDataRequestMessage;
+use models::HistoricalDataRequestMessage;
 use serde_json::json;
 
 pub async fn run_historical_data_worker(nats: Connection) {

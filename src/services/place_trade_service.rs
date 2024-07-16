@@ -1,7 +1,7 @@
 use futures::stream::StreamExt;
 use nats::{asynk::Connection, Error};
 use serde_json::json;
-use crate::models::PlaceTradeRequest;
+use models::PlaceTradeRequest;
 
 pub async fn run_place_trade_request_worker(nats: Connection) -> Result<(), Error> {
     let subscription = match nats.subscribe("place_trade_request").await {
