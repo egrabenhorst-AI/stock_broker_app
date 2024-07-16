@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package historicaldata;
+
+service HistoricalDataService {
+    rpc GetHistoricalData (HistoricalDataRequest) returns (HistoricalDataResponse);
+}
+
+message HistoricalDataRequest {
+    string symbol = 1;
+    string start_date = 2;
+    string end_date = 3;
+}
+
+message HistoricalDataResponse {
+    repeated HistoricalDataEntry entries = 1;
+}
+
+message HistoricalDataEntry {
+    string date = 1;
+    double open = 2;
+    double high = 3;
+    double low = 4;
+    double close = 5;
+    double volume = 6;
+}

@@ -321,20 +321,37 @@ async fn process_trade_request(trade_request: PlaceTradeRequest) -> Result<serde
 ```rust
 use futures::stream::StreamExt;
 use nats::asynk::Connection;
-use crate::models::HistoricalDataRequestMessage;
+use models::HistoricalDataRequestMessage;
 use serde_json::json;
+use tonic::{transport::Channel, Request};
+use async_trait::async_trait;
+use crate::services::historical_data::historicaldata::{
+    historical_data_service_client::HistoricalDataServiceClient,
+    HistoricalDataRequest,
+    HistoricalDataEntry,
+    HistoricalDataResponse
+};
 
-pub async fn run_historical_data_worker(nats: Connection) {
+pub mod historicaldata {
+    tonic::include_proto!("historicaldata");
+}
+
+// Function to run the historical data worker
+pub async fn run_historical_data_worker(nats: Connection) -> Result<(), Box<dyn std::error::Error>> {
     let subscription = match nats.subscribe("historical_data_request").await {
         Ok(sub) => sub,
         Err(e) => {
             eprintln!("Failed to subscribe to 'historical_data_request': {}", e);
-            return;
+            return Ok(());
         }
     };
 
     let mut messages = subscription.messages();
     println!("Listening for historical data request messages...");
+
+    // Connect to the gRPC server
+    let channel = Channel::from_static("http://[::1]:50051").connect().await?;
+    let mut client = HistoricalDataServiceClient::new(channel);
 
     while let Some(msg) = messages.next().await {
         match msg {
@@ -351,8 +368,8 @@ pub async fn run_historical_data_worker(nats: Connection) {
                 // Log the received request
                 println!("Received historical data request: {:?}", request);
 
-                // Simulate processing the historical data request
-                match process_historical_data_request(request).await {
+                // Process the historical data request by making a gRPC call
+                match process_historical_data_request(&mut client, request).await {
                     Ok(response) => println!("Processed historical data request: {:?}", response),
                     Err(e) => eprintln!("Failed to process historical data request: {}", e),
                 }
@@ -362,23 +379,31 @@ pub async fn run_historical_data_worker(nats: Connection) {
             }
         }
     }
+
+    Ok(())
 }
 
-async fn process_historical_data_request(request: HistoricalDataRequestMessage) -> Result<serde_json::Value, String> {
-    // Simulate fetching historical data (replace with actual logic as needed)
-    let simulated_response = json!({
+// Function to process historical data requests by making a gRPC call
+async fn process_historical_data_request(client: &mut HistoricalDataServiceClient<Channel>, request: HistoricalDataRequestMessage) -> Result<serde_json::Value, String> {
+    let grpc_request = HistoricalDataRequest {
+        symbol: request.symbol,
+        start_date: request.start_timestamp,
+        end_date: request.end_timestamp,
+    };
+
+    // Make the gRPC call to fetch historical data
+    let response: HistoricalDataResponse = match client.get_historical_data(Request::new(grpc_request)).await {
+        Ok(response) => response.into_inner(),
+        Err(e) => return Err(format!("gRPC request failed: {}", e)),
+    };
+
+    // Convert the response to JSON format
+    let response_json = json!({
         "symbol": request.symbol,
-        "data": [
-            {"timestamp": request.start_timestamp, "value": 150.0},
-            {"timestamp": request.end_timestamp, "value": 155.0}
-        ]
+        "data": response.entries.iter().map(|entry| json!({"timestamp": entry.date, "value": entry.value})).collect::<Vec<_>>()
     });
 
-    // Simulate a delay for processing
-    tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
-
-    // Here, you can replace this with the actual logic to fetch and process historical data
-    Ok(simulated_response)
+    Ok(response_json)
 }
 ```
 
@@ -762,6 +787,7 @@ spec:
 ### Summary
 
 In this setup, we've designed a robust stockbroker application architecture using Rust, Actix, NATS, and Kubernetes. The application consists of HTTP servers and worker services, managed through Kubernetes deployments and scaled dynamically using HPA based on CPU utilization metrics. Nginx acts as a load balancer, distributing incoming trade requests across multiple instances of the HTTP servers. This setup ensures high availability, scalability, and efficient resource utilization in handling financial trade operations. Each component is containerized using Docker and orchestrated using Helm charts, providing a streamlined deployment process in Kubernetes clusters.
+
 
 
 

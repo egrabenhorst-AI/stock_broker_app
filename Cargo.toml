@@ -8,6 +8,13 @@ nats = "0.14.0"
 actix-web = "4.0.0"
 dotenv = "0.15.0"
 tokio = { version = "1.0", features = ["full"] }
+tonic = "0.6"
+prost = "0.10"
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1.50"
+
+[build-dependencies]
+tonic-build = "0.6"
 
 [[bin]]
 name = "http_server"
