@@ -3,18 +3,12 @@ use std::env;
 use dotenv::dotenv;
 use nats::asynk::Connection;
 
-pub mod services {
-    pub mod nats_service;
-}
 
-pub mod handlers {
-    pub mod place_trade;
-    pub mod historical_data;
-}
+extern crate stock_broker_application;
 
-use crate::handlers::place_trade::create_trade_request;
-use crate::handlers::historical_data::get_historical_data;
-use services::nats_service::connect_to_nats;
+use stock_broker_application::handlers::place_trade::create_trade_request;
+use stock_broker_application::handlers::historical_data::get_historical_data;
+use stock_broker_application::services::nats_service::connect_to_nats;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

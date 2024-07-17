@@ -2,13 +2,10 @@ use dotenv::dotenv;
 use std::env;
 use nats::asynk::Connection;
 
-pub mod services {
-    pub mod historical_data_service;
-    pub mod nats_service;
-}
+extern crate stock_broker_application;
 
-use services::nats_service::connect_to_nats;
-use services::historical_data_service::run_historical_data_worker;
+use stock_broker_application::services::nats_service::connect_to_nats;
+use stock_broker_application::services::historical_data_service::run_historical_data_worker;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
