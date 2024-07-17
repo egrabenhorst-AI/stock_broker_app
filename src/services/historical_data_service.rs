@@ -1,19 +1,17 @@
+pub mod historicaldata {
+    tonic::include_proto!("historicaldata");
+}
+
+use historicaldata::{
+    historical_data_service_client::HistoricalDataServiceClient,
+    HistoricalDataRequest,
+};
 use futures::stream::StreamExt;
 use nats::asynk::Connection;
 use models::HistoricalDataRequestMessage;
 use serde_json::json;
 use tonic::{transport::Channel, Request};
 use async_trait::async_trait;
-use crate::services::historical_data::historicaldata::{
-    historical_data_service_client::HistoricalDataServiceClient,
-    HistoricalDataRequest,
-    HistoricalDataEntry,
-    HistoricalDataResponse
-};
-
-pub mod historicaldata {
-    tonic::include_proto!("historicaldata");
-}
 
 // Function to run the historical data worker
 pub async fn run_historical_data_worker(nats: Connection) -> Result<(), Box<dyn std::error::Error>> {
@@ -71,7 +69,7 @@ async fn process_historical_data_request(client: &mut HistoricalDataServiceClien
     };
 
     // Make the gRPC call to fetch historical data
-    let response: HistoricalDataResponse = match client.get_historical_data(Request::new(grpc_request)).await {
+    let response = match client.get_historical_data(Request::new(grpc_request)).await {
         Ok(response) => response.into_inner(),
         Err(e) => return Err(format!("gRPC request failed: {}", e)),
     };
