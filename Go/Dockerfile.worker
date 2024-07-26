@@ -1,0 +1,35 @@
+# Dockerfile for Workers
+
+# Use the official Golang image as a base image
+FROM golang:1.18 as builder
+
+# Set the Current Working Directory inside the container
+WORKDIR /app
+
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+
+# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+RUN go mod download
+
+# Copy the source from the current directory to the Working Directory inside the container
+COPY . .
+
+# Build the Go app
+RUN go build -o place_trade_worker src/bin/place_trade_worker.go
+RUN go build -o historical_data_worker src/bin/historical_data_worker.go
+
+# Start a new stage from scratch
+FROM golang:1.18
+
+WORKDIR /app
+
+# Copy the Pre-built binary files from the previous stage
+COPY --from=builder /app/place_trade_worker .
+COPY --from=builder /app/historical_data_worker .
+
+# Command to run the Place Trade Worker
+CMD ["./place_trade_worker"]
+
+# Command to run the Historical Data Worker
+CMD ["./historical_data_worker"]

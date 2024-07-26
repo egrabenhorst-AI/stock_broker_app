@@ -1,8 +1,12 @@
 use actix_web::{web, HttpResponse, Responder};
 use serde_json::json;
-use models::HistoricalDataRequestMessage;
-use services::nats_service::publish_to_nats;
 use nats::asynk::Connection;
+
+extern create stock_broker_application;
+
+use stock_broker_application::services::nats_service::publish_to_nats;
+use stock_broker_application::models::HistoricalDataRequestMessage;
+
 
 pub async fn get_historical_data(nats: web::Data<Connection>, query: web::Query<HistoricalDataRequestMessage>) -> impl Responder {
     let message_json = match serde_json::to_string(&query.into_inner()) {
