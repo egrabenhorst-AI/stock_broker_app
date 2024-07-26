@@ -1,6 +1,6 @@
 ### Systems Architecture
 
-![alt text](diagram.png)
+![alt text](systems_diagram.png)
 
 ### Project Structure
 
